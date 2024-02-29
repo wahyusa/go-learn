@@ -4,7 +4,8 @@ This is simple CLI App to show data based on `os.Args` inserted when running.
 
 ## Installation
 
-`git clone https://github.com/wahyusa/go-learn.git`
+`git clone -b simple-cli-with-args https://github.com/wahyusa/go-learn.git
+`
 
 ## Usage
 
