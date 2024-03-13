@@ -34,9 +34,11 @@ Some request and response are sent around `application/json` header.
 
 Request and response requirements are based on this https://anotepad.com/notes/3sjp4bg3
 
+CURL Testing command are expected to run in shell that support `backslash` for multiline command. (Git bash should works)
+
 ### Step 1 GET Orders (First time)
 
-Expect: No data
+Expect: No data []
 
 ```bash
 curl -X GET http://localhost:6969/orders
