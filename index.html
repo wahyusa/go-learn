@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ingfo Cuaca</title>
+    <link rel="stylesheet" href="tailwind.css" />
+  </head>
+  <body>
+    <main class="m-8 mx-auto min-h-dvh max-w-screen-sm border">
+      <div class="grid gap-y-1">
+        <h1 class="p-3">
+          Polling updated in
+          <span id="timer" class="font-mono text-2xl">15</span> second
+        </h1>
+        <section class="grid p-4">
+          <h2>Result</h2>
+          <div class="mt-2 flex items-center gap-x-4 p-4">
+            <span
+              id="status-pill"
+              class="block h-6 w-24 overflow-hidden rounded-lg border shadow-inner"
+            ></span>
+            <h3 id="status-text"></h3>
+          </div>
+        </section>
+
+        <section class="grid p-4">
+          <h2>API Response</h2>
+          <textarea
+            rows="7"
+            disabled
+            readonly
+            id="weather-container"
+            class="mt-2 bg-gray-100 font-mono"
+          >
+API Json response here</textarea
+          >
+        </section>
+
+        <section class="grid p-4">
+          <h2>Original JSON File</h2>
+          <textarea
+            rows="7"
+            disabled
+            readonly
+            id="json-file"
+            class="mt-2 bg-gray-100 font-mono"
+          >
+JSON File values here</textarea
+          >
+        </section>
+      </div>
+    </main>
+
+    <script>
+      let timerInterval;
+
+      function fetchWeatherAndUpdate() {
+        fetch("/weather")
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("weather-container").value = JSON.stringify(
+              data,
+              null,
+              4
+            );
+            updateStatusPill(data.humanstatus, data);
+          });
+      }
+
+      // handle status show & bg pills
+      function updateStatusPill(status, data) {
+        const pill = document.getElementById("status-pill");
+        const statusText = document.getElementById("status-text");
+        // inline css lol
+        statusText.innerHTML = `
+            <span style="font-weight:bold" class="uppercase">${status}</span> Water ${data.status.water}<span style="font-size:smaller;vertical-align:super">m</span> | Wind ${data.status.wind}<span style="font-size:smaller;vertical-align:super">m/s</span>
+            `;
+        pill.className =
+          "block h-6 w-24 overflow-hidden rounded-lg border shadow-inner";
+        switch (status.toLowerCase()) {
+          case "bahaya":
+            pill.classList.add("bg-rose-400");
+            pill.classList.add("shadow-rose-600");
+            break;
+          case "siaga":
+            pill.classList.add("bg-amber-400");
+            pill.classList.add("shadow-amber-600");
+            break;
+          case "aman":
+            pill.classList.add("bg-lime-400");
+            pill.classList.add("shadow-lime-600");
+            break;
+          default:
+            break;
+        }
+      }
+
+      // ini dia timer 15 second, semua aksi selanjutnya depend on this
+      function startTimer(duration, display) {
+        clearInterval(timerInterval); // Clear any existing interval
+        let timer = duration;
+        display.textContent = timer;
+
+        timerInterval = setInterval(function () {
+          if (timer <= 0) {
+            fetchWeatherAndUpdate(); // RE-Fetch data when timer reaches 0
+            fetchAndDisplayJSONFile(); // also re-fetch json file
+            timer = duration; // Reset timer
+          }
+          display.textContent = timer;
+          timer--;
+        }, 1000); // Update every second
+      }
+
+      // Function to fetch and display JSON file content
+      function fetchAndDisplayJSONFile() {
+        fetch("/weather.json")
+          .then((response) => response.text())
+          .then((data) => {
+            document.getElementById("json-file").value = data;
+          })
+          .catch((error) => console.error("Error fetching JSON file:", error));
+      }
+
+      // Initial call first time
+      window.addEventListener("DOMContentLoaded", function () {
+        let fifteenSeconds = 15,
+          display = document.querySelector("#timer");
+        startTimer(fifteenSeconds, display);
+        fetchWeatherAndUpdate(); // Fetch data initially
+        fetchAndDisplayJSONFile(); // show json file initially
+      });
+    </script>
+  </body>
+</html>
