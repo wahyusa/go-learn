@@ -1,7 +1,7 @@
 package main
 
 import (
-	"go-learn/schema"
+	"go-learn/model"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -15,7 +15,7 @@ func main() {
 	dbcon = ConnectionStart()
 
 	// generate tables
-	dbcon.AutoMigrate(&schema.User{}, &schema.Photo{}, &schema.Comment{}, &schema.SocialMedia{})
+	dbcon.AutoMigrate(&model.User{}, &model.Photo{}, &model.Comment{}, &model.SocialMedia{})
 
 }
 
