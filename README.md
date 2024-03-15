@@ -1,6 +1,6 @@
 # About
 
-Auto pooling 15 second and update JSON with Go
+Auto polling 15 second and update JSON with Go
 
 ## Installation
 
