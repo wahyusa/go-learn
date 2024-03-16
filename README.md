@@ -3,9 +3,9 @@
 Auto polling 15 second and update JSON with Go
 
 <div style="display:flex">
-<img src="images/1_aman.png" style="width:480px;height:480px">
-<img src="images/2_siaga.png" style="width:480px;height:480px">
-<img src="images/3_bahaya.png" style="width:480px;height:480px">
+<img src="images/1_aman.png" style="width:300px;height:360px">
+<img src="images/2_siaga.png" style="width:300px;height:360px">
+<img src="images/3_bahaya.png" style="width:300px;height:360px">
 </div>
 
 ## Installation
