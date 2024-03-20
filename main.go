@@ -29,6 +29,15 @@ func main() {
 		})
 	})
 
+	// Route group for `User` model
+	users := r.Group("/users")
+	{
+		users.POST("/register", handleUserRegister)
+		users.POST("/login", handleUserLogin)
+		users.PUT("/users", handleUserUpdate)
+		users.DELETE("/users", handleUserDelete)
+	}
+
 	// Run on PORT 8080 as required in documentation
 	r.Run()
 
@@ -41,4 +50,10 @@ func ConnectionStart() *gorm.DB {
 		panic(err)
 	}
 	return db
+}
+
+// User controller
+
+func handleUserRegister() {
+	// TODO
 }
