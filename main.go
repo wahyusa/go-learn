@@ -2,7 +2,9 @@ package main
 
 import (
 	"go-learn/model"
+	"net/http"
 
+	"github.com/gin-gonic/gin"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -16,6 +18,19 @@ func main() {
 
 	// generate tables
 	dbcon.AutoMigrate(&model.User{}, &model.Photo{}, &model.Comment{}, &model.SocialMedia{})
+
+	// Gin router
+	r := gin.Default()
+
+	// Route group for `ping`
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Setup Gin",
+		})
+	})
+
+	// Run on PORT 8080 as required in documentation
+	r.Run()
 
 }
 
