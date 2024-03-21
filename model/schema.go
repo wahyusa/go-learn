@@ -1,16 +1,23 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type User struct {
-	gorm.Model
-	Username    string
-	Email       string
-	Password    string
-	Age         uint
-	Photo       []Photo
-	Comment     []Comment
-	SocialMedia []SocialMedia
+	ID              int64  `gorm:"primaryKey"`
+	Username        string `gorm:"size:50;not null"`
+	Email           string `gorm:"size:150;not null"`
+	Password        string `gorm:"type:text;not null"`
+	Age             int    `gorm:"not null"`
+	ProfileImageURL string `gorm:"type:text"`
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
+	Photos          []Photo       `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
+	Comments        []Comment     `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
+	SocialMedias    []SocialMedia `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
 }
 
 type Photo struct {

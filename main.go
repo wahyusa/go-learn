@@ -16,6 +16,9 @@ func main() {
 	// Setup DB Connection
 	dbcon = ConnectionStart()
 
+	// DEV ONLY auto truncate
+	dbcon.Migrator().DropTable(&model.User{}, &model.Photo{}, &model.Comment{}, &model.SocialMedia{})
+
 	// generate tables
 	dbcon.AutoMigrate(&model.User{}, &model.Photo{}, &model.Comment{}, &model.SocialMedia{})
 
@@ -33,9 +36,9 @@ func main() {
 	users := r.Group("/users")
 	{
 		users.POST("/register", handleUserRegister)
-		users.POST("/login", handleUserLogin)
-		users.PUT("/users", handleUserUpdate)
-		users.DELETE("/users", handleUserDelete)
+		// users.POST("/login", handleUserLogin)
+		// users.PUT("/users", handleUserUpdate)
+		// users.DELETE("/users", handleUserDelete)
 	}
 
 	// Run on PORT 8080 as required in documentation
@@ -54,6 +57,18 @@ func ConnectionStart() *gorm.DB {
 
 // User controller
 
-func handleUserRegister() {
-	// TODO
+func handleUserRegister(c *gin.Context) {
+	// User struct request format
+	var newUser model.User
+
+	// Parse JSON request
+	if err := c.ShouldBindJSON(&newUser); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Save the order to the database
+	dbcon.Create(&newUser)
+
+	c.JSON(http.StatusCreated, newUser)
 }
