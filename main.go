@@ -25,13 +25,6 @@ func main() {
 	// Gin router
 	r := gin.Default()
 
-	// Route group for `ping`
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Setup Gin",
-		})
-	})
-
 	// Route group for `User` model
 	users := r.Group("/users")
 	{
