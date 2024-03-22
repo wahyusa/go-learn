@@ -58,17 +58,26 @@ func ConnectionStart() *gorm.DB {
 // User controller
 
 func handleUserRegister(c *gin.Context) {
-	// User struct request format
-	var newUser model.User
+	// User struct request and response format
+	var newUserRequest model.User
 
 	// Parse JSON request
-	if err := c.ShouldBindJSON(&newUser); err != nil {
+	if err := c.ShouldBindJSON(&newUserRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	// Save the order to the database
-	dbcon.Create(&newUser)
+	dbcon.Create(&newUserRequest)
 
-	c.JSON(http.StatusCreated, newUser)
+	// Set response
+	newUserResponse := model.UserRegisterResponse{
+		ID:              newUserRequest.ID,
+		Email:           newUserRequest.Email,
+		Username:        newUserRequest.Username,
+		Age:             newUserRequest.Age,
+		ProfileImageURL: newUserRequest.ProfileImageURL,
+	}
+
+	c.JSON(http.StatusCreated, newUserResponse)
 }
