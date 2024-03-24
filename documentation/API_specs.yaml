@@ -1,0 +1,701 @@
+openapi: 3.0.0
+info:
+  title: MyGram API
+  description: Koleksi Endpoint MyGram API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /users/register:
+    post:
+      tags:
+        - users
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - age
+                - username
+              properties:
+                email:
+                  type: string
+                username:
+                  type: string
+                age:
+                  type: integer
+                password:
+                  type: string
+                profile_image_url:
+                  type: string
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  email:
+                    type: string
+                  username:
+                    type: string
+                  age:
+                    type: integer
+                  profile_image_url:
+                    type: string
+        'default':
+          description: Unexpected error
+  /users/login:
+    post:
+      tags:
+        - users
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAbWFpbC5tZSIsImlkIjoxfQ.8Cbk7HqsbmnC80nv0WI4iQ5TH7Rmr3DOmrtllAqDfV8'
+        'default':
+          description: Unexpected error
+  /users:
+    put:
+      security:
+      - jwt: []
+      tags:
+        - users
+      summary: Update current user information
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - username
+                - age
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                age:
+                  type: integer
+                profile_image_url:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  email:
+                    type: string
+                  username:
+                    type: string
+                  age:
+                    type: integer
+                  profile_image_url:
+                    type: string
+        'default':
+          description: Unexpected error
+    delete:
+      security:
+        - jwt: []
+      tags:
+        - users  
+      summary: Delete current user
+      responses:
+        '200':
+          description: OK
+        'default':
+          description: Unexpected error
+
+  /photos:
+    post:
+      security:
+        - jwt: []
+      tags:
+        - photos
+      summary: Create a new photo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - photo_url
+              properties:
+                caption:
+                  type: string
+                title:
+                  type: string
+                photo_url:
+                  type: string
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  caption:
+                    type: string
+                  title:
+                    type: string
+                  photo_url:
+                    type: string
+                  user_id:
+                    type: integer
+        'default':
+          description: Unexpected error
+    get:
+      security:
+        - jwt: []
+      tags:
+        - photos
+      summary: Get all photos from all user
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: integer
+                    caption:
+                      type: string
+                    title:
+                      type: string
+                    photo_url:
+                      type: string
+                    user_id:
+                      type: integer
+                    user:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        email:
+                          type: string
+                        username:
+                          type: string
+        'default':
+          description: Unexpected error
+  /photos/{photoId}:
+    get:
+      security:
+        - jwt: []
+      tags:
+        - photos
+      summary: Get photo by ID
+      parameters:
+        - name: photoId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  caption:
+                    type: string
+                  title:
+                    type: string
+                  photo_url:
+                    type: string
+                  user_id:
+                    type: integer
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      email:
+                        type: string
+                      username:
+                        type: string
+                    
+        'default':
+          description: Unexpected error
+    put:
+      security:
+        - jwt: []
+      tags:
+        - photos
+      summary: Update photo by ID
+      parameters:
+        - name: photoId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - photo_url
+              properties:
+                title:
+                  type: string
+                caption:
+                  type: string
+                photo_url:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  caption:
+                    type: string
+                  title:
+                    type: string
+                  photo_url:
+                    type: string
+                  user_id:
+                    type: integer
+        'default':
+          description: Unexpected error
+    delete:
+      security:
+        - jwt: []
+      tags:
+        - photos
+      summary: Delete photo by ID
+      parameters:
+        - name: photoId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+        'default':
+          description: Unexpected error
+  
+  /comments:
+    post:
+      security:
+        - jwt: []
+      tags:
+        - comments
+      summary: Create a new comment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - message
+              - photo_id
+              properties:
+                message:
+                  type: string
+                photo_id:
+                  type: integer
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  message:
+                    type: string
+                  photo_id:
+                    type: integer
+                  user_id:
+                    type: integer
+        'default':
+          description: Unexpected error
+    get:
+      security:
+        - jwt: []
+      tags:
+        - comments
+      summary: Get all comments from all user
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: integer
+                    message:
+                      type: string
+                    photo_id:
+                      type: integer
+                    user_id:
+                      type: integer
+                    user:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        email:
+                          type: string
+                        username:
+                          type: string
+                    photo:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        caption:
+                          type: string
+                        title:
+                          type: string
+                        photo_url:
+                          type: string
+                        user_id:
+                          type: integer
+        'default':
+          description: Unexpected error
+  /comments/{commentId}:
+    get:
+      security:
+        - jwt: []
+      tags:
+        - comments
+      summary: Get comment by ID
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  message:
+                    type: string
+                  photo_id:
+                    type: integer
+                  user_id:
+                    type: integer
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      email:
+                        type: string
+                      username:
+                        type: string
+                  photo:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      caption:
+                        type: string
+                      title:
+                        type: string
+                      photo_url:
+                        type: string
+                      user_id:
+                        type: integer
+        'default':
+          description: Unexpected error
+    put:
+      security:
+        - jwt: []
+      tags:
+        - comments
+      summary: Update comment by ID
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  message:
+                    type: string
+                  photo_id:
+                    type: integer
+                  user_id:
+                    type: integer
+        'default':
+          description: Unexpected error
+    delete:
+      security:
+        - jwt: []
+      tags:
+        - comments
+      summary: Delete comment by ID
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+        'default':
+          description: Unexpected error
+  
+  /socialmedias:
+    post:
+      security:
+        - jwt: []
+      tags:
+        - social medias
+      summary: Create a new social media entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                social_media_url:
+                  type: string
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  social_media_url:
+                    type: string
+                  user_id:
+                    type: integer
+        'default':
+          description: Unexpected error
+    get:
+      security:
+        - jwt: []
+      tags:
+        - social medias
+      summary: Get all social media entries only from logged-in user
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    social_media_url:
+                      type: string
+                    user_id:
+                      type: integer
+                    user:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        email:
+                          type: string
+                        username:
+                          type: string
+        'default':
+          description: Unexpected error
+  /socialmedias/{socialMediaId}:
+    get:
+      security:
+        - jwt: []
+      tags:
+        - social medias
+      summary: Get spesific social media entries only from logged-in user
+      parameters:
+        - name: socialMediaId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  social_media_url:
+                    type: string
+                  user_id:
+                    type: integer
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      email:
+                        type: string
+                      username:
+                        type: string
+        'default':
+          description: Unexpected error
+    put:
+      security:
+        - jwt: []
+      tags:
+        - social medias
+      summary: Update social media entry by ID
+      parameters:
+        - name: socialMediaId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                social_media_url:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  social_media_url:
+                    type: string
+                  user_id:
+                    type: integer
+        'default':
+          description: Unexpected error
+    delete:
+      security:
+        - jwt: []
+      tags:
+        - social medias
+      summary: Delete social media entry by ID
+      parameters:
+        - name: socialMediaId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+        'default':
+          description: Unexpected error
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
