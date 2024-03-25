@@ -14,9 +14,9 @@ func StoreUser(c *gin.Context) {
 	var jsonRequest struct {
 		Email           string `json:"email" binding:"required"`
 		Username        string `json:"username" binding:"required"`
-		Age             uint   `json:"age" binding:"required"`
+		Age             int    `json:"age" binding:"required"`
 		Password        string `json:"password" binding:"required"`
-		ProfileImageURL string `json:"profile_image_url" binding:"required"`
+		ProfileImageURL string `json:"profile_image_url"`
 	}
 
 	if err := c.BindJSON(&jsonRequest); err != nil {
@@ -49,15 +49,28 @@ func StoreUser(c *gin.Context) {
 		return
 	}
 
-	// TODO profile_image_URL harus valid
-	// TODO username harus unique
-	// TODO email harus unique
+	// profile_image_URL harus valid
+	if !helpers.IsValidURL(jsonRequest.ProfileImageURL) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid URL format"})
+		return
+	}
+	// username harus unique
+	if !helpers.IsUniqueUsername(config.DBCON, jsonRequest.Username) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Username already exists"})
+		return
+	}
+
+	// email harus unique
+	if !helpers.IsUniqueEmail(config.DBCON, jsonRequest.Email) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Email already exists"})
+		return
+	}
 
 	// Insert to DB
 	user := models.User{
 		Email:           jsonRequest.Email,
 		Username:        jsonRequest.Username,
-		Age:             uint(jsonRequest.Age),
+		Age:             int(jsonRequest.Age),
 		Password:        string(hashedPassword),
 		ProfileImageURL: jsonRequest.ProfileImageURL,
 	}
