@@ -100,6 +100,12 @@ func LoginAttempt(c *gin.Context) {
 		return
 	}
 
+	// format email harus valid sebelum cek ke DB
+	if !helpers.IsValidEmail(jsonRequest.Email) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid email address"})
+		return
+	}
+
 	var user models.User
 
 	// cari email dulu kalo gk ada gak usah lanjut cek pw
