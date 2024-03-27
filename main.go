@@ -27,6 +27,7 @@ func main() {
 		users.POST("/login", controllers.LoginAttempt)
 		// users.PUT("/users", handleUserUpdate)
 		// users.DELETE("/users", handleUserDelete)
+		// users.GET("/protected", middlewares.IsAuthenticated, controllers.TestProtected)
 	}
 
 	// RUN

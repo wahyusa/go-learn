@@ -125,3 +125,9 @@ func LoginAttempt(c *gin.Context) {
 
 	c.JSON(200, gin.H{"token": token})
 }
+
+func TestProtected(c *gin.Context) {
+	userID, _ := c.Get("userID")
+	// Now you have the userID available for further processing
+	c.JSON(http.StatusOK, gin.H{"userID": userID})
+}
