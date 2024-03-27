@@ -28,7 +28,7 @@ http://localhost:8080/users/register
 
 **[HTTP POST]**
 
-http://localhost:8080/users/register
+http://localhost:8080/users/login
 
 That's it!
 
