@@ -24,7 +24,7 @@ func main() {
 	users := r.Group("/users")
 	{
 		users.POST("/register", controllers.StoreUser)
-		// users.POST("/login", handleUserLogin)
+		users.POST("/login", controllers.LoginAttempt)
 		// users.PUT("/users", handleUserUpdate)
 		// users.DELETE("/users", handleUserDelete)
 	}

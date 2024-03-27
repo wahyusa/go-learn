@@ -5,8 +5,11 @@ import (
 	"go-learn/helpers"
 	"go-learn/models"
 	"net/http"
+	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -54,6 +57,7 @@ func StoreUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid URL format"})
 		return
 	}
+
 	// username harus unique
 	if !helpers.IsUniqueUsername(config.DBCON, jsonRequest.Username) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Username already exists"})
@@ -83,4 +87,49 @@ func StoreUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "User stored successfully"})
+}
+
+func LoginAttempt(c *gin.Context) {
+	var jsonRequest struct {
+		Email    string `json:"email" binding:"required"`
+		Password string `json:"password" binding:"required"`
+	}
+
+	if err := c.BindJSON(&jsonRequest); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var user models.User
+
+	// cari email dulu kalo gk ada gak usah lanjut cek pw
+	config.DBCON.First(&user, "email = ?", jsonRequest.Email)
+
+	if user.ID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Incorrect user / pw"})
+		return
+	}
+
+	// cek password hash
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(jsonRequest.Password))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Incorrect user / pw"})
+		return
+	}
+
+	// Generate JWT
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"sub": user.ID,
+		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
+	})
+
+	tokenResult, err := token.SignedString([]byte(os.Getenv("NOT_SECRET")))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Fail to generate token"})
+		return
+	}
+
+	c.JSON(200, gin.H{"token": tokenResult})
 }
