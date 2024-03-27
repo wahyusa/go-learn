@@ -5,12 +5,8 @@ import (
 	"go-learn/helpers"
 	"go-learn/models"
 	"net/http"
-	"os"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func StoreUser(c *gin.Context) {
@@ -27,8 +23,8 @@ func StoreUser(c *gin.Context) {
 		return
 	}
 
-	// Password hash
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(jsonRequest.Password), 10)
+	// Generate password hash
+	hashedPassword, err := helpers.HashPassword(jsonRequest.Password)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to hash password"})
 		return
@@ -75,7 +71,7 @@ func StoreUser(c *gin.Context) {
 		Email:           jsonRequest.Email,
 		Username:        jsonRequest.Username,
 		Age:             int(jsonRequest.Age),
-		Password:        string(hashedPassword),
+		Password:        hashedPassword,
 		ProfileImageURL: jsonRequest.ProfileImageURL,
 	}
 
@@ -116,26 +112,16 @@ func LoginAttempt(c *gin.Context) {
 		return
 	}
 
-	// cek password hash
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(jsonRequest.Password))
-
-	if err != nil {
+	if !helpers.CheckPassword(user.Password, jsonRequest.Password) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Incorrect user / pw"})
 		return
 	}
 
-	// Generate JWT
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": user.ID,
-		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
-	})
-
-	tokenResult, err := token.SignedString([]byte(os.Getenv("NOT_SECRET")))
-
+	token, err := helpers.GenerateToken(user.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Fail to generate token"})
 		return
 	}
 
-	c.JSON(200, gin.H{"token": tokenResult})
+	c.JSON(200, gin.H{"token": token})
 }
